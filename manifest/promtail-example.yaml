@@ -1,0 +1,10 @@
+apiVersion: lokioperator.l0calh0st.cn/v1alpha1
+kind: Promtail
+metadata:
+  name: example
+  namespace: default
+spec:
+  image: docker.io/grafana/promtail:2.4.1
+  config:
+    server:
+      http_listen_address: "12345"

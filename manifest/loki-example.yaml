@@ -1,0 +1,10 @@
+apiVersion: lokioperator.l0calh0st.cn/v1alpha1
+kind: Loki
+metadata:
+  name: example
+  namespace: default
+spec:
+  image: grafana/loki:2.4.1
+  deployMode:
+    monolithic:
+      all: 1
