@@ -3,4 +3,4 @@ language: go
 go:
   - "1.17"
 script:
-  - make dev
+  - make test
