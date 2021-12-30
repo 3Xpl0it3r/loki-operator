@@ -27,8 +27,8 @@ type fakeController struct {
 	kubeClient *k8sfake.Clientset
 	crClient   *crfakeclients.Clientset
 	// informers
-	kubeInformers informers.SharedInformerFactory
-	crInformers   crinformers.SharedInformerFactory
+	kubeInformerFactory informers.SharedInformerFactory
+	crInformerFactory   crinformers.SharedInformerFactory
 	// recorder
 	recorder *record.FakeRecorder
 	operator operator.Operator
@@ -39,15 +39,15 @@ func newFakeController(kubeClient *k8sfake.Clientset, crClient *crfakeclients.Cl
 	fc := &fakeController{
 		kubeClient:    kubeClient,
 		crClient:      crClient,
-		kubeInformers: informers.NewSharedInformerFactory(kubeClient, noResyncPeriod()),
-		crInformers:   crinformers.NewSharedInformerFactory(crClient, noResyncPeriod()),
+		kubeInformerFactory: informers.NewSharedInformerFactory(kubeClient, noResyncPeriod()),
+		crInformerFactory:   crinformers.NewSharedInformerFactory(crClient, noResyncPeriod()),
 		recorder:      record.NewFakeRecorder(defaultFakeRecorderBufferSize),
 	}
 
-	fc.fixture = croperatortesting.NewFixture(fc.kubeInformers, fc.crInformers)
-	fc.operator = promtail.NewOperator(kubeClient, crClient, fc.crInformers.Lokioperator().V1alpha1().Promtails().Lister(),
-		fc.kubeInformers.Core().V1().ConfigMaps().Lister(), fc.kubeInformers.Core().V1().Services().Lister(),
-		fc.kubeInformers.Apps().V1().DaemonSets().Lister(), fc.recorder)
+	fc.fixture = croperatortesting.NewFixture(fc.kubeInformerFactory, fc.crInformerFactory)
+	fc.operator = promtail.NewOperator(kubeClient, crClient, fc.crInformerFactory.Lokioperator().V1alpha1().Promtails().Lister(),
+		fc.kubeInformerFactory.Core().V1().ConfigMaps().Lister(), fc.kubeInformerFactory.Core().V1().Services().Lister(),
+		fc.kubeInformerFactory.Apps().V1().DaemonSets().Lister(), fc.recorder)
 	return fc
 }
 
@@ -55,8 +55,8 @@ func (fc *fakeController) runController(key interface{}, startInformer bool) err
 	if startInformer {
 		stopCh := make(chan struct{})
 		close(stopCh)
-		fc.kubeInformers.Start(stopCh)
-		fc.crInformers.Start(stopCh)
+		fc.kubeInformerFactory.Start(stopCh)
+		fc.crInformerFactory.Start(stopCh)
 	}
 	// run controller
 	if err := fc.operator.Reconcile(key); err != nil {

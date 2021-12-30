@@ -24,9 +24,9 @@ type fakeController struct {
 	// client
 	kubeClient *k8sfake.Clientset
 	crClient   *crfakeclients.Clientset
-	// informers
-	kubeInformers informers.SharedInformerFactory
-	crInformers   crinformers.SharedInformerFactory
+	// informerFactory
+	kubeInformerFactory informers.SharedInformerFactory
+	crInformerFactory   crinformers.SharedInformerFactory
 	// recorder
 	recorder *record.FakeRecorder
 	operator operator.Operator
@@ -37,15 +37,15 @@ func newFakeController(kubeClient *k8sfake.Clientset, crClient *crfakeclients.Cl
 	fc := &fakeController{
 		kubeClient:    kubeClient,
 		crClient:      crClient,
-		kubeInformers: informers.NewSharedInformerFactory(kubeClient, noResyncPeriod()),
-		crInformers:   crinformers.NewSharedInformerFactory(crClient, noResyncPeriod()),
+		kubeInformerFactory: informers.NewSharedInformerFactory(kubeClient, noResyncPeriod()),
+		crInformerFactory:   crinformers.NewSharedInformerFactory(crClient, noResyncPeriod()),
 		recorder:      record.NewFakeRecorder(10),
 	}
 
-	fc.fixture = operatortesting.NewFixture(fc.kubeInformers, fc.crInformers)
-	fc.operator = loki.NewOperator(kubeClient, crClient, fc.crInformers.Lokioperator().V1alpha1().Lokis().Lister(),
-		fc.kubeInformers.Core().V1().ConfigMaps().Lister(), fc.kubeInformers.Core().V1().Services().Lister(),
-		fc.kubeInformers.Apps().V1().StatefulSets().Lister(), fc.kubeInformers.Apps().V1().Deployments().Lister(), fc.recorder)
+	fc.fixture = operatortesting.NewFixture(fc.kubeInformerFactory, fc.crInformerFactory)
+	fc.operator = loki.NewOperator(kubeClient, crClient, fc.crInformerFactory.Lokioperator().V1alpha1().Lokis().Lister(),
+		fc.kubeInformerFactory.Core().V1().ConfigMaps().Lister(), fc.kubeInformerFactory.Core().V1().Services().Lister(),
+		fc.kubeInformerFactory.Apps().V1().StatefulSets().Lister(), fc.kubeInformerFactory.Apps().V1().Deployments().Lister(), fc.recorder)
 	return fc
 }
 
@@ -53,8 +53,8 @@ func (fc *fakeController) runController(key string, startInformer bool) error {
 	if startInformer {
 		stopCh := make(chan struct{})
 		close(stopCh)
-		fc.kubeInformers.Start(stopCh)
-		fc.crInformers.Start(stopCh)
+		fc.kubeInformerFactory.Start(stopCh)
+		fc.crInformerFactory.Start(stopCh)
 	}
 	// run controller
 	if err := fc.operator.Reconcile(key); err != nil {

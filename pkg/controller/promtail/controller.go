@@ -52,37 +52,33 @@ type controller struct {
 	operator operator.Operator
 }
 
+// NewFakeController return a new fake promTail controller
+func NewFakeController(kubeClient kubeclientset.Interface,kubeInformerFactory informers.SharedInformerFactory,
+	crClient crclientset.Interface, crInformerFactory crinformers.SharedInformerFactory,operator operator.Operator,
+) crcontroller.Controller {
+	c := NewController(kubeClient, kubeInformerFactory, crClient, crInformerFactory, nil).(*controller)
+	c.operator = operator
+	c.cacheSynced = []cache.InformerSynced{alwaysReady}
+	c.recorder = record.NewFakeRecorder(10)
+	return c
+}
+
 // NewController create a new controller for Loki resources
-func NewController(kubeClientSet kubeclientset.Interface, kubeInformers informers.SharedInformerFactory, crClientSet crclientset.Interface,
-	crInformers crinformers.SharedInformerFactory, reg prometheus.Registerer) crcontroller.Controller {
+func NewController(kubeClientSet kubeclientset.Interface, kubeInformerFactory informers.SharedInformerFactory, crClientSet crclientset.Interface,
+	crInformerFactory crinformers.SharedInformerFactory, reg prometheus.Registerer) crcontroller.Controller {
 	eventBroadcaster := record.NewBroadcaster()
 	eventBroadcaster.StartLogging(klog.V(2).Infof)
 	eventBroadcaster.StartRecordingToSink(&typedcorev1.EventSinkImpl{Interface: kubeClientSet.CoreV1().Events(apicorev1.NamespaceAll)})
 	recorder := eventBroadcaster.NewRecorder(scheme.Scheme, apicorev1.EventSource{Component: "loki-operator"})
 
-	return newPromtailController(kubeClientSet, kubeInformers, crClientSet, crInformers, recorder, reg)
+	return newPromtailController(kubeClientSet, kubeInformerFactory, crClientSet, crInformerFactory, recorder, reg)
 }
 
-// NewFakeController return a new fake promTail controller
-func NewFakeController(kubeClient kubeclientset.Interface, crClient crclientset.Interface, crInformers crinformers.SharedInformerFactory,operator operator.Operator) crcontroller.Controller {
-	c :=  &controller{
-		kubeClientSet: kubeClient,
-		crClientSet:   crClient,
-		register:      nil,
-		recorder:      record.NewFakeRecorder(10),
-		operator:      operator,
-		cacheSynced:   []cache.InformerSynced{alwaysReady},
-		queue: workqueue.NewRateLimitingQueue(workqueue.DefaultControllerRateLimiter()),
-	}
-	promtailInformer := crInformers.Lokioperator().V1alpha1().Promtails()
-	promtailInformer.Informer().AddEventHandler(newPromtailEventHandler(c))
 
-	return c
-}
 
 // newLokiController is really conv
-func newPromtailController(kubeClientSet kubeclientset.Interface, kubeInformers informers.SharedInformerFactory, crClientSet crclientset.Interface,
-	crInformers crinformers.SharedInformerFactory, recorder record.EventRecorder, reg prometheus.Registerer) *controller {
+func newPromtailController(kubeClientSet kubeclientset.Interface, kubeInformerFactory informers.SharedInformerFactory, crClientSet crclientset.Interface,
+	crInformerFactory crinformers.SharedInformerFactory, recorder record.EventRecorder, reg prometheus.Registerer) *controller {
 	c := &controller{
 		register:      reg,
 		kubeClientSet: kubeClientSet,
@@ -91,19 +87,19 @@ func newPromtailController(kubeClientSet kubeclientset.Interface, kubeInformers 
 	}
 	c.queue = workqueue.NewRateLimitingQueue(workqueue.DefaultControllerRateLimiter())
 
-	daemonsetInformer := kubeInformers.Apps().V1().DaemonSets()
+	daemonsetInformer := kubeInformerFactory.Apps().V1().DaemonSets()
 	c.daemonsetLister = daemonsetInformer.Lister()
 	c.cacheSynced = append(c.cacheSynced, daemonsetInformer.Informer().HasSynced)
 
-	serviceInformer := kubeInformers.Core().V1().Services()
+	serviceInformer := kubeInformerFactory.Core().V1().Services()
 	c.serviceLister = serviceInformer.Lister()
 	c.cacheSynced = append(c.cacheSynced, serviceInformer.Informer().HasSynced)
 
-	configMapInformer := kubeInformers.Core().V1().ConfigMaps()
+	configMapInformer := kubeInformerFactory.Core().V1().ConfigMaps()
 	c.configMapLister = configMapInformer.Lister()
 	c.cacheSynced = append(c.cacheSynced, configMapInformer.Informer().HasSynced)
 
-	promtailInformer := crInformers.Lokioperator().V1alpha1().Promtails()
+	promtailInformer := crInformerFactory.Lokioperator().V1alpha1().Promtails()
 	c.promtailLister = promtailInformer.Lister()
 	promtailInformer.Informer().AddEventHandlerWithResyncPeriod(newPromtailEventHandler(c), time.Second)
 	c.cacheSynced = append(c.cacheSynced, promtailInformer.Informer().HasSynced)

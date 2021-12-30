@@ -7,6 +7,7 @@ import (
 	"github.com/l0calh0st/loki-operator/pkg/controller/loki"
 	"github.com/l0calh0st/loki-operator/pkg/operator/fake"
 	"k8s.io/apimachinery/pkg/watch"
+	"k8s.io/client-go/informers"
 	k8sfake "k8s.io/client-go/kubernetes/fake"
 	"k8s.io/client-go/testing"
 	"time"
@@ -19,7 +20,7 @@ type fakeController struct {
 
 	fakeWatcher *watch.FakeWatcher
 	crClient *crfakeclients.Clientset
-	crInformer crinformers.SharedInformerFactory
+	crInformerFactory crinformers.SharedInformerFactory
 }
 
 func newFakeController() *fakeController {
@@ -27,11 +28,12 @@ func newFakeController() *fakeController {
 	crClient := crfakeclients.NewSimpleClientset()
 	watcher := watch.NewFakeWithChanSize(10, false)
 	crClient.PrependWatchReactor("lokis", testing.DefaultWatchReactor(watcher, nil))
-	crInformer := crinformers.NewSharedInformerFactory(crClient, noResyncPeriod())
+	crInformerFactory := crinformers.NewSharedInformerFactory(crClient, noResyncPeriod())
+	kubeInformerFactory := informers.NewSharedInformerFactory(kubeClient, noResyncPeriod())
 	return &fakeController{
-		controller:  loki.NewFakeController(kubeClient, crClient, crInformer,fake.NewOperator()),
+		controller:  loki.NewFakeController(kubeClient, kubeInformerFactory,crClient, crInformerFactory,fake.NewOperator()),
 		fakeWatcher: watcher,
 		crClient: crClient,
-		crInformer: crInformer,
+		crInformerFactory: crInformerFactory,
 	}
 }

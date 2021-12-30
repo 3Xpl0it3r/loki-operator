@@ -1,6 +1,5 @@
 package loki_test
 
-
 import (
 	"context"
 	crapiv1alpha1 "github.com/l0calh0st/loki-operator/pkg/apis/lokioperator.l0calh0st.cn/v1alpha1"
@@ -14,10 +13,13 @@ import (
 var _ = Describe("Controller", func() {
 	var (
 		crdObj     *crapiv1alpha1.Loki
-		fakeCtrl    *fakeController
+		fakeCtrl   *fakeController
 		eventsHook controller.EventsHook
-		event controller.Event
-		stopCh chan struct{}
+		event      controller.Event
+		stopCh     chan struct{}
+
+		ctx    context.Context
+		cancel context.CancelFunc
 	)
 
 	BeforeEach(func() {
@@ -25,13 +27,17 @@ var _ = Describe("Controller", func() {
 		crdObj = newLoki()
 		fakeCtrl = newFakeController()
 		stopCh = make(chan struct{})
+		ctx, cancel = context.WithCancel(context.TODO())
 	})
 	JustBeforeEach(func() {
 		crapiv1alpha1.WithDefaultsLoki(crdObj)
 		gomega.Ω(fakeCtrl.controller.AddHook(eventsHook)).ShouldNot(gomega.HaveOccurred())
-		fakeCtrl.crInformer.Start(stopCh)
+		fakeCtrl.crInformerFactory.Start(stopCh)
+		gomega.Ω(fakeCtrl.controller.Start(ctx))
 	})
 	JustAfterEach(func() {
+		// should stop controller first before informer
+		cancel()
 		close(stopCh)
 	})
 
@@ -44,21 +50,19 @@ var _ = Describe("Controller", func() {
 		})
 	})
 
-
-
 })
 
-func newLoki()*crapiv1alpha1.Loki{
+func newLoki() *crapiv1alpha1.Loki {
 	return &crapiv1alpha1.Loki{
-		TypeMeta:   metav1.TypeMeta{
+		TypeMeta: metav1.TypeMeta{
 			APIVersion: crapiv1alpha1.SchemeGroupVersion.String(),
-			Kind: "Loki",
+			Kind:       "Loki",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name: "test",
+			Name:      "test",
 			Namespace: apicorev1.NamespaceDefault,
 		},
-		Spec:       crapiv1alpha1.LokiSpec{},
-		Status:     crapiv1alpha1.LokiStatus{},
+		Spec:   crapiv1alpha1.LokiSpec{},
+		Status: crapiv1alpha1.LokiStatus{},
 	}
 }

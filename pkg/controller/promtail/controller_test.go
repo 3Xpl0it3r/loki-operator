@@ -8,6 +8,7 @@ import (
 	"github.com/onsi/gomega"
 	apicorev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"time"
 )
 
 var _ = Describe("Controller", func() {
@@ -17,6 +18,9 @@ var _ = Describe("Controller", func() {
 		eventsHook controller.EventsHook
 		event controller.Event
 		stopCh chan struct{}
+
+		ctx context.Context
+		cancel context.CancelFunc
 	)
 
 	BeforeEach(func() {
@@ -24,21 +28,24 @@ var _ = Describe("Controller", func() {
 		crdObj = newPromtail()
 		fakeCtrl = newFakeController()
 		stopCh = make(chan struct{})
+		ctx,cancel = context.WithCancel(context.TODO())
 	})
 	JustBeforeEach(func() {
-
 		crapiv1alpha1.WithDefaultsPromtail(crdObj)
 		gomega.Ω(fakeCtrl.controller.AddHook(eventsHook)).ShouldNot(gomega.HaveOccurred())
-		fakeCtrl.crInformer.Start(stopCh)
+		fakeCtrl.crInformerFactory.Start(stopCh)
+		gomega.Ω(fakeCtrl.controller.Start(ctx)).ShouldNot(gomega.HaveOccurred())
 	})
 	JustAfterEach(func() {
+		// should stop controller first before informer
+		cancel()
 		close(stopCh)
 	})
 
 	Context("Create Promtail", func() {
 		It("should receive addEvent from eventsHooks", func() {
 			fakeCtrl.crClient.LokioperatorV1alpha1().Promtails(apicorev1.NamespaceDefault).Create(context.TODO(), crdObj, metav1.CreateOptions{})
-			gomega.Eventually(eventsHook.GetEventsChan()).Should(gomega.Receive(&event))
+			gomega.Eventually(eventsHook.GetEventsChan()).Should(gomega.Receive(&event),2 * time.Second)
 			gomega.Ω(event.Type).To(gomega.Equal(controller.EventAdded))
 			gomega.Ω(event.Object).To(gomega.Equal(crdObj))
 		})

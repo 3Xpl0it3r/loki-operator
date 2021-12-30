@@ -54,10 +54,21 @@ type controller struct {
 	operator operator.Operator
 }
 
+// NewFakeController return a new fake promTail controller
+func NewFakeController(kubeClient kubeclientset.Interface,kubeInformerFactory informers.SharedInformerFactory,
+	crClient crclientset.Interface, crInformerFactory crinformers.SharedInformerFactory,operator operator.Operator,
+) crcontroller.Controller {
+	c := NewController(kubeClient, kubeInformerFactory, crClient, crInformerFactory, nil).(*controller)
+	c.operator = operator
+	c.cacheSynced = []cache.InformerSynced{alwaysReady}
+	c.recorder = record.NewFakeRecorder(10)
+	return c
+}
+
 
 // NewController create a new controller for Loki resources
-func NewController(kubeClientSet kubeclientset.Interface, kubeInformers informers.SharedInformerFactory, crClientSet crclientset.Interface,
-	crInformers crinformers.SharedInformerFactory, reg prometheus.Registerer) crcontroller.Controller {
+func NewController(kubeClientSet kubeclientset.Interface, kubeInformerFactory informers.SharedInformerFactory, crClientSet crclientset.Interface,
+	crInformerFactory crinformers.SharedInformerFactory, reg prometheus.Registerer) crcontroller.Controller {
 
 	eventBroadcaster := record.NewBroadcaster()
 	eventBroadcaster.StartLogging(klog.V(2).Infof)
@@ -65,25 +76,10 @@ func NewController(kubeClientSet kubeclientset.Interface, kubeInformers informer
 	recorder := eventBroadcaster.NewRecorder(scheme.Scheme, apicorev1.EventSource{Component: "loki-operator"})
 
 
-	return newLokiController(kubeClientSet, kubeInformers, crClientSet, crInformers, recorder, reg)
+	return newLokiController(kubeClientSet, kubeInformerFactory, crClientSet, crInformerFactory, recorder, reg)
 }
 
-// NewFakeController return a new fake loki controller
-func NewFakeController(kubeClient kubeclientset.Interface, crClient crclientset.Interface, crInformers crinformers.SharedInformerFactory,operator operator.Operator) crcontroller.Controller {
-	c :=  &controller{
-		kubeClientSet: kubeClient,
-		crClientSet:   crClient,
-		register:      nil,
-		recorder:      record.NewFakeRecorder(10),
-		operator:      operator,
-		cacheSynced:   []cache.InformerSynced{alwaysReady},
-		queue: workqueue.NewRateLimitingQueue(workqueue.DefaultControllerRateLimiter()),
-	}
-	lokiInformer := crInformers.Lokioperator().V1alpha1().Lokis()
-	lokiInformer.Informer().AddEventHandler(newLokiEventHandler(c))
 
-	return c
-}
 
 // newLokiController is really conv
 func newLokiController(kubeClientSet kubeclientset.Interface, kubeInformers informers.SharedInformerFactory, crClientSet crclientset.Interface,
