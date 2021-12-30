@@ -9,16 +9,16 @@ import (
 	"k8s.io/apimachinery/pkg/util/errors"
 )
 
-func InstallCustomResourceDefineToApiServer(extClientSet extensionsclientset.Interface)error{
+func InstallCustomResourceDefineToApiServer(extClientSet extensionsclientset.Interface) error {
 	cs := []*apiextensionsv1.CustomResourceDefinition{}
 	cs = append(cs, loki.NewCustomResourceDefine())
 	cs = append(cs, promtail.NewCustomResourceDefine())
-	for _,c := range cs{
+	for _, c := range cs {
 		err := crd.RegisterCRDWithObj(extClientSet, c)
-		if err != nil{
+		if err != nil {
 			return err
 		}
-		if err = crd.WaitForCRDEstablished(extClientSet, c.GetName());err != nil{
+		if err = crd.WaitForCRDEstablished(extClientSet, c.GetName()); err != nil {
 			return errors.NewAggregate([]error{err, crd.UnRegisterCRD(extClientSet, c.GetName())})
 		}
 	}

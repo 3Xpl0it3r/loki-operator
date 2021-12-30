@@ -6,16 +6,11 @@ import (
 )
 
 type Client interface {
-	Get(obj runtime.Object)error
-	Update(obj runtime.Object)error
+	Get(obj runtime.Object) error
+	Update(obj runtime.Object) error
 	Delete(obj runtime.Object)
 }
 
 type client struct {
 	kubeClient kubernetes.Interface
 }
-
-
-
-
-

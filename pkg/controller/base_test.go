@@ -9,8 +9,8 @@ import (
 var _ = Describe("Base", func() {
 	var (
 		baseController controller.Base
-		hook = controller.NewEventsHook(1)
-		anotherHook = controller.NewEventsHook(1)
+		hook           = controller.NewEventsHook(1)
+		anotherHook    = controller.NewEventsHook(1)
 	)
 	BeforeEach(func() {
 		baseController = controller.NewControllerBase()

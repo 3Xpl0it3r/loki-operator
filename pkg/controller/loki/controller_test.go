@@ -16,29 +16,18 @@ var _ = Describe("Controller", func() {
 		fakeCtrl   *fakeController
 		eventsHook controller.EventsHook
 		event      controller.Event
-		stopCh     chan struct{}
-
-		ctx    context.Context
-		cancel context.CancelFunc
 	)
 
 	BeforeEach(func() {
 		eventsHook = controller.NewEventsHook(10)
 		crdObj = newLoki()
 		fakeCtrl = newFakeController()
-		stopCh = make(chan struct{})
-		ctx, cancel = context.WithCancel(context.TODO())
 	})
 	JustBeforeEach(func() {
 		crapiv1alpha1.WithDefaultsLoki(crdObj)
 		gomega.Ω(fakeCtrl.controller.AddHook(eventsHook)).ShouldNot(gomega.HaveOccurred())
-		fakeCtrl.crInformerFactory.Start(stopCh)
-		gomega.Ω(fakeCtrl.controller.Start(ctx))
 	})
 	JustAfterEach(func() {
-		// should stop controller first before informer
-		cancel()
-		close(stopCh)
 	})
 
 	Context("Create Loki", func() {

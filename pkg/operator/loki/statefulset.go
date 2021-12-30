@@ -58,4 +58,3 @@ func NewStatefulSet(loki *crapiv1alpha1.Loki, modKind crapiv1alpha1.ModeKind, ta
 	}
 	return sts
 }
-

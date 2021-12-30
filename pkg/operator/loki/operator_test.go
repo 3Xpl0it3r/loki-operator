@@ -50,7 +50,6 @@ var _ = Describe("Test Loki Operator", func() {
 
 			fakeCtrl.fixture.RecordKubeActions(testing.ExpectCreateStatefulSetAction(statefulSet), testing.ExpectCreateServiceAction(service))
 
-
 			key, err := getKey(crObj)
 			gomega.Ω(err).ShouldNot(gomega.HaveOccurred())
 
@@ -59,7 +58,7 @@ var _ = Describe("Test Loki Operator", func() {
 		})
 		It("Create Loki, Internal Default ConfigMap", func() {
 			var err error
-			configMap,err  = loki.NewLokiConfigMap(crObj, string(crapiv1alpha1.ModeKindMonolithic))
+			configMap, err = loki.NewLokiConfigMap(crObj, string(crapiv1alpha1.ModeKindMonolithic))
 			gomega.Ω(err).ShouldNot(gomega.HaveOccurred())
 			statefulSet = loki.NewStatefulSet(crObj, crapiv1alpha1.ModeKindMonolithic, crapiv1alpha1.TargetKindAllInOne, configMap)
 
@@ -67,14 +66,14 @@ var _ = Describe("Test Loki Operator", func() {
 			fakeCtrl.fixture.RecordKubeActions(testing.ExpectCreateConfigMapAction(configMap), testing.ExpectCreateStatefulSetAction(statefulSet),
 				testing.ExpectCreateServiceAction(service))
 
-			key,err := getKey(crObj)
+			key, err := getKey(crObj)
 			gomega.Ω(err).ShouldNot(gomega.HaveOccurred())
 			gomega.Ω(fakeCtrl.runController(key, true)).ShouldNot(gomega.HaveOccurred())
 
 		})
 		It("Create Loki, Internal Custom ConfigMap", func() {
 			var err error
-			configMap,err  = loki.NewLokiConfigMap(crObj, string(crapiv1alpha1.ModeKindMonolithic))
+			configMap, err = loki.NewLokiConfigMap(crObj, string(crapiv1alpha1.ModeKindMonolithic))
 			gomega.Ω(err).ShouldNot(gomega.HaveOccurred())
 			statefulSet = loki.NewStatefulSet(crObj, crapiv1alpha1.ModeKindMonolithic, crapiv1alpha1.TargetKindAllInOne, configMap)
 
@@ -82,7 +81,7 @@ var _ = Describe("Test Loki Operator", func() {
 			fakeCtrl.fixture.RecordKubeActions(testing.ExpectCreateConfigMapAction(configMap), testing.ExpectCreateStatefulSetAction(statefulSet),
 				testing.ExpectCreateServiceAction(service))
 
-			key,err := getKey(crObj)
+			key, err := getKey(crObj)
 			gomega.Ω(err).ShouldNot(gomega.HaveOccurred())
 			gomega.Ω(fakeCtrl.runController(key, true)).ShouldNot(gomega.HaveOccurred())
 

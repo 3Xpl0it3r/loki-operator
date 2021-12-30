@@ -13,10 +13,6 @@ import (
 	"k8s.io/apimachinery/pkg/util/yaml"
 )
 
-
-
-
-
 // RegisterCRD register CustomResourceDefine according crd filename into k8s apiserver
 func RegisterCRDWithFile(namespace string, extClientSet extensionsclientset.Interface, filename string) error {
 	crd := new(apiextensionsv1.CustomResourceDefinition)
@@ -34,10 +30,9 @@ func RegisterCRDWithFile(namespace string, extClientSet extensionsclientset.Inte
 	return RegisterCRDWithObj(extClientSet, crd)
 }
 
-
-func RegisterCRDWithObj( extClientSet extensionsclientset.Interface, crdObj *apiextensionsv1.CustomResourceDefinition)error{
-	if _,err := extClientSet.ApiextensionsV1().CustomResourceDefinitions().Create(context.TODO(), crdObj, metav1.CreateOptions{});err != nil{
-		if k8serror.IsAlreadyExists(err){
+func RegisterCRDWithObj(extClientSet extensionsclientset.Interface, crdObj *apiextensionsv1.CustomResourceDefinition) error {
+	if _, err := extClientSet.ApiextensionsV1().CustomResourceDefinitions().Create(context.TODO(), crdObj, metav1.CreateOptions{}); err != nil {
+		if k8serror.IsAlreadyExists(err) {
 			return nil
 		}
 		return err

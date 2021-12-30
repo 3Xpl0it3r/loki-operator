@@ -47,7 +47,7 @@ func NewStartCommand(stopCh <-chan struct{}) *cobra.Command {
 				return fmt.Errorf("Options Complete failed %v. ", err)
 			}
 			if err := runCommand(opts, stopCh); err != nil {
-				return fmt.Errorf("Run %s failed.: %v ", os.Args[0],err)
+				return fmt.Errorf("Run %s failed.: %v ", os.Args[0], err)
 			}
 			return nil
 		},
@@ -82,11 +82,11 @@ func runCommand(o *options.Options, stopCh <-chan struct{}) error {
 	if err != nil {
 		return err
 	}
-	extClientSet,err := extensionsclientset.NewForConfig(restConfig)
-	if err != nil{
+	extClientSet, err := extensionsclientset.NewForConfig(restConfig)
+	if err != nil {
 		return err
 	}
-	if err = crdregister.InstallCustomResourceDefineToApiServer(extClientSet);err != nil{
+	if err = crdregister.InstallCustomResourceDefineToApiServer(extClientSet); err != nil {
 		return err
 	}
 
@@ -101,7 +101,6 @@ func runCommand(o *options.Options, stopCh <-chan struct{}) error {
 
 	crInformers := buildCustomResourceInformerFactory(crClientSet)
 	kubeInformers := buildKubeStandardResourceInformerFactory(kubeClientSet)
-
 
 	register := prometheus.NewRegistry()
 	ctx, cancel := context.WithCancel(context.Background())
@@ -119,25 +118,21 @@ func runCommand(o *options.Options, stopCh <-chan struct{}) error {
 	promtailControler := promtail.NewController(kubeClientSet, kubeInformers, crClientSet, crInformers, register)
 	lokiController := loki.NewController(kubeClientSet, kubeInformers, crClientSet, crInformers, register)
 	// run sharedInformer
-	crInformers.Start(stopCh)
-	kubeInformers.Start(stopCh)
+	crInformers.Start(ctx.Done())
+	kubeInformers.Start(ctx.Done())
 	// run controller
 	wg.Go(runController(ctx, promtailControler))
 	wg.Go(runController(ctx, lokiController))
 	select {
 	case <-stopCh:
 		klog.Infof("exited")
-	case <-ctx.Done():
 	}
 	cancel()
-
-	if err = wg.Wait();err !=nil{
+	if err = wg.Wait(); err != nil {
 		return err
 	}
 	return nil
 }
-
-
 
 func runController(ctx context.Context, controller controller.Controller) func() error {
 	return func() error {

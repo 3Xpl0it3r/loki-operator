@@ -13,13 +13,13 @@ import (
 	"time"
 )
 
-var noResyncPeriod = func()time.Duration {return 0}
+var noResyncPeriod = func() time.Duration { return 0 }
 
 type fakeController struct {
 	controller controller.Controller
 
-	fakeWatcher *watch.FakeWatcher
-	crClient *crfakeclients.Clientset
+	fakeWatcher       *watch.FakeWatcher
+	crClient          *crfakeclients.Clientset
 	crInformerFactory crinformers.SharedInformerFactory
 }
 
@@ -31,9 +31,9 @@ func newFakeController() *fakeController {
 	crInformerFactory := crinformers.NewSharedInformerFactory(crClient, noResyncPeriod())
 	kubeInformerFactory := informers.NewSharedInformerFactory(kubeClient, noResyncPeriod())
 	return &fakeController{
-		controller:  loki.NewFakeController(kubeClient, kubeInformerFactory,crClient, crInformerFactory,fake.NewOperator()),
-		fakeWatcher: watcher,
-		crClient: crClient,
+		controller:        loki.NewFakeController(kubeClient, kubeInformerFactory, crClient, crInformerFactory, fake.NewOperator()),
+		fakeWatcher:       watcher,
+		crClient:          crClient,
 		crInformerFactory: crInformerFactory,
 	}
 }

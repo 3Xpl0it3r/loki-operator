@@ -6,40 +6,38 @@ import (
 )
 
 // getLokiAppName return the name of app according loki with mod target
-func getLokiAppName(loki *crapiv1alpha1.Loki, mod, target string)string{
+func getLokiAppName(loki *crapiv1alpha1.Loki, mod, target string) string {
 	return loki.GetName() + "-" + "loki" + "-" + mod + "-" + target
 }
 
-
-
-func getLokiConfigMapName(loki *crapiv1alpha1.Loki, modKind string)string{
+func getLokiConfigMapName(loki *crapiv1alpha1.Loki, modKind string) string {
 	return loki.GetName() + "-loki-" + modKind
 }
 
 // LokiGatewayService is used to exposed to promtail,
-func getLokiGatewayServiceName(loki *crapiv1alpha1.Loki)string{
+func getLokiGatewayServiceName(loki *crapiv1alpha1.Loki) string {
 	return loki.GetName() + "-loki-gateway"
 }
 
 // getResourceLabels generate labels according crResource object
-func getResourceLabels(loki *crapiv1alpha1.Loki, mod, target string)map[string]string{
+func getResourceLabels(loki *crapiv1alpha1.Loki, mod, target string) map[string]string {
 	labels := map[string]string{
-		"app": loki.GetName(),
+		"app":        loki.GetName(),
 		"controller": loki.Kind,
 		"deployMode": mod,
-		"target": target,
+		"target":     target,
 	}
 	return labels
 }
 
 // getResourceAnnotations generate annotations according crResource object
-func getResourceAnnotations(loki *crapiv1alpha1.Loki)map[string]string{
+func getResourceAnnotations(loki *crapiv1alpha1.Loki) map[string]string {
 	annotations := map[string]string{}
 	return annotations
 }
 
 // getResourceOwnerReference generate OwnerReference according crResource object
-func getResourceOwnerReference(loki *crapiv1alpha1.Loki)[]metav1.OwnerReference{
+func getResourceOwnerReference(loki *crapiv1alpha1.Loki) []metav1.OwnerReference {
 	ownerReference := []metav1.OwnerReference{}
 	ownerReference = append(ownerReference, *metav1.NewControllerRef(loki, crapiv1alpha1.SchemeGroupVersion.WithKind("Loki")))
 	return ownerReference

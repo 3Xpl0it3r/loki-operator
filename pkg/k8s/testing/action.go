@@ -12,12 +12,12 @@ import (
 	"reflect"
 )
 
-func ValidateActions(expectedActions, actualActions []k8stest.Action)error{
+func ValidateActions(expectedActions, actualActions []k8stest.Action) error {
 	for i, action := range actualActions {
 		if len(expectedActions) < i+1 {
 			return fmt.Errorf("%d unexpected actions: %+v ", len(actualActions)-len(expectedActions), actualActions[i:])
 		}
-		if err := checkAction(expectedActions[i], action);err != nil{
+		if err := checkAction(expectedActions[i], action); err != nil {
 			return err
 		}
 	}
@@ -63,7 +63,6 @@ func checkAction(expected, actual k8stest.Action) error {
 	}
 	return nil
 }
-
 
 // Pod Action Creator
 
@@ -189,6 +188,3 @@ func ExpectUpdateCustomResourceStatusAction(cr runtime.Object) k8stest.Action {
 	}
 	return nil
 }
-
-
-

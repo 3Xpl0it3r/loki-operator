@@ -53,8 +53,8 @@ type controller struct {
 }
 
 // NewFakeController return a new fake promTail controller
-func NewFakeController(kubeClient kubeclientset.Interface,kubeInformerFactory informers.SharedInformerFactory,
-	crClient crclientset.Interface, crInformerFactory crinformers.SharedInformerFactory,operator operator.Operator,
+func NewFakeController(kubeClient kubeclientset.Interface, kubeInformerFactory informers.SharedInformerFactory,
+	crClient crclientset.Interface, crInformerFactory crinformers.SharedInformerFactory, operator operator.Operator,
 ) crcontroller.Controller {
 	c := NewController(kubeClient, kubeInformerFactory, crClient, crInformerFactory, nil).(*controller)
 	c.operator = operator
@@ -73,8 +73,6 @@ func NewController(kubeClientSet kubeclientset.Interface, kubeInformerFactory in
 
 	return newPromtailController(kubeClientSet, kubeInformerFactory, crClientSet, crInformerFactory, recorder, reg)
 }
-
-
 
 // newLokiController is really conv
 func newPromtailController(kubeClientSet kubeclientset.Interface, kubeInformerFactory informers.SharedInformerFactory, crClientSet crclientset.Interface,
@@ -125,6 +123,8 @@ func (c *controller) Start(ctx context.Context) error {
 
 	klog.Info("promtail controller started. begin handler items......")
 	go wait.Until(c.runWorker, time.Second, ctx.Done())
+	<-ctx.Done()
+	klog.Infof("Promtail controller has stopped")
 	return nil
 }
 

@@ -15,7 +15,7 @@ func (h *promtailEventHandler) OnAdd(obj interface{}) {
 		return
 	}
 	crapiv1alpha1.WithDefaultsPromtail(cr)
-	for _,hook := range h.c.GetHooks(){
+	for _, hook := range h.c.GetHooks() {
 		hook.OnAdd(cr)
 	}
 }
@@ -33,7 +33,7 @@ func (h *promtailEventHandler) OnUpdate(oldObj, newObj interface{}) {
 		return
 	}
 	h.c.enqueueFunc(newCr)
-	for _, hook := range h.c.GetHooks(){
+	for _, hook := range h.c.GetHooks() {
 		hook.OnUpdate(newCr)
 	}
 }
@@ -44,7 +44,7 @@ func (h *promtailEventHandler) OnDelete(obj interface{}) {
 		return
 	}
 	h.c.enqueueFunc(cr)
-	for _, hook := range h.c.GetHooks(){
+	for _, hook := range h.c.GetHooks() {
 		hook.OnDelete(cr)
 	}
 }

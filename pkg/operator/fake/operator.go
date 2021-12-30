@@ -7,6 +7,6 @@ func (f fakeOperator) Reconcile(obj interface{}) error {
 	return nil
 }
 
-func NewOperator()*fakeOperator{
+func NewOperator() *fakeOperator {
 	return &fakeOperator{}
 }

@@ -17,9 +17,9 @@ type Promtail struct {
 
 // PromtailSpec describes the specification of Promtail applications using kubernetes as a cluster manager
 type PromtailSpec struct {
-	Image     string `json:"image"`
-	ConfigMap string `json:"configMap"`
-	Config PromtailConfig `json:"config"`
+	Image     string         `json:"image"`
+	ConfigMap string         `json:"configMap"`
+	Config    PromtailConfig `json:"config"`
 }
 
 // PromtailStatus describes the current status of Promtail applications

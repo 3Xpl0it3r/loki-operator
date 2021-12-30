@@ -63,7 +63,7 @@ func (op *lokiOperator) Reconcile(obj interface{}) error {
 	}
 	crapiv1alpha1.WithDefaultsLoki(loki)
 
-	for mod, _ := range loki.Spec.DeployMode {
+	for mod := range loki.Spec.DeployMode {
 		switch mod {
 		case crapiv1alpha1.ModeKinMicroservice:
 			// 以microservice 方式运行

@@ -41,37 +41,37 @@ func NewCustomResourceDefine() *apiextensionsv1.CustomResourceDefinition {
 					Schema: &apiextensionsv1.CustomResourceValidation{OpenAPIV3Schema: &apiextensionsv1.JSONSchemaProps{
 						Type: "object",
 						Properties: map[string]apiextensionsv1.JSONSchemaProps{
-							"apiVersion": apiextensionsv1.JSONSchemaProps{Type: string(jsonSchemePropsTypeAsString)},
-							"kind":       apiextensionsv1.JSONSchemaProps{Type: string(jsonSchemePropsTypeAsString)},
-							"metadata":   apiextensionsv1.JSONSchemaProps{Type: string(jsonSchemePropsTypeAsObject)},
-							"spec": apiextensionsv1.JSONSchemaProps{Type: string(jsonSchemePropsTypeAsObject), Properties: map[string]apiextensionsv1.JSONSchemaProps{
-								"replicas":  apiextensionsv1.JSONSchemaProps{Type: string(jsonSchemePropsTypeAsInteger), Description: "Number of desired loki instance in k8s. Default 1"},
-								"image":     apiextensionsv1.JSONSchemaProps{Type: string(jsonSchemePropsTypeAsString), Description: "The image of loki used."},
-								"configMap": apiextensionsv1.JSONSchemaProps{Type: string(jsonSchemePropsTypeAsString), Description: "Name of configmap. If you special the configmap, the loki will use configmap as it's config or it will use internal default config"},
-								"config": apiextensionsv1.JSONSchemaProps{Type: string(jsonSchemePropsTypeAsObject), Properties: map[string]apiextensionsv1.JSONSchemaProps{
+							"apiVersion": {Type: string(jsonSchemePropsTypeAsString)},
+							"kind":       {Type: string(jsonSchemePropsTypeAsString)},
+							"metadata":   {Type: string(jsonSchemePropsTypeAsObject)},
+							"spec": {Type: string(jsonSchemePropsTypeAsObject), Properties: map[string]apiextensionsv1.JSONSchemaProps{
+								"replicas":  {Type: string(jsonSchemePropsTypeAsInteger), Description: "Number of desired loki instance in k8s. Default 1"},
+								"image":     {Type: string(jsonSchemePropsTypeAsString), Description: "The image of loki used."},
+								"configMap": {Type: string(jsonSchemePropsTypeAsString), Description: "Name of configmap. If you special the configmap, the loki will use configmap as it's config or it will use internal default config"},
+								"config": {Type: string(jsonSchemePropsTypeAsObject), Properties: map[string]apiextensionsv1.JSONSchemaProps{
 								}},
-								"deployMode": apiextensionsv1.JSONSchemaProps{Type: string(jsonSchemePropsTypeAsObject), Properties: map[string]apiextensionsv1.JSONSchemaProps{
-									"monolithic": apiextensionsv1.JSONSchemaProps{Type: string(jsonSchemePropsTypeAsObject), Properties: map[string]apiextensionsv1.JSONSchemaProps{
-										"all": apiextensionsv1.JSONSchemaProps{Type: string(jsonSchemePropsTypeAsInteger), Description: "Number of desired loki instance in k8s. Default 1"},
+								"deployMode": {Type: string(jsonSchemePropsTypeAsObject), Properties: map[string]apiextensionsv1.JSONSchemaProps{
+									"monolithic": {Type: string(jsonSchemePropsTypeAsObject), Properties: map[string]apiextensionsv1.JSONSchemaProps{
+										"all": {Type: string(jsonSchemePropsTypeAsInteger), Description: "Number of desired loki instance in k8s. Default 1"},
 									}},
-									"sample": apiextensionsv1.JSONSchemaProps{Type: string(jsonSchemePropsTypeAsObject), Properties: map[string]apiextensionsv1.JSONSchemaProps{
-										"read":  apiextensionsv1.JSONSchemaProps{Type: string(jsonSchemePropsTypeAsInteger), Description: "Number of desired read target in loki stack. Default 1"},
-										"write": apiextensionsv1.JSONSchemaProps{Type: string(jsonSchemePropsTypeAsInteger), Description: "Number of desired write target in loki stack. Default 1"},
+									"sample": {Type: string(jsonSchemePropsTypeAsObject), Properties: map[string]apiextensionsv1.JSONSchemaProps{
+										"read":  {Type: string(jsonSchemePropsTypeAsInteger), Description: "Number of desired read target in loki stack. Default 1"},
+										"write": {Type: string(jsonSchemePropsTypeAsInteger), Description: "Number of desired write target in loki stack. Default 1"},
 									}},
-									"microservice": apiextensionsv1.JSONSchemaProps{Type: string(jsonSchemePropsTypeAsObject), Properties: map[string]apiextensionsv1.JSONSchemaProps{
-										"ingester":        apiextensionsv1.JSONSchemaProps{Type: string(jsonSchemePropsTypeAsInteger), Description: "Number of desired ingester pod in loki stack. Default 1"},
-										"distributor":     apiextensionsv1.JSONSchemaProps{Type: string(jsonSchemePropsTypeAsInteger), Description: "Number of desired distributor pod in loki stack. Default 1"},
-										"query-frontent":  apiextensionsv1.JSONSchemaProps{Type: string(jsonSchemePropsTypeAsInteger), Description: "Number of desired query-frontent pod in loki stack. Default 1"},
-										"query-scheduler": apiextensionsv1.JSONSchemaProps{Type: string(jsonSchemePropsTypeAsInteger), Description: "Nunber of desired query-scheduler pod in loki stack, Default 1"},
-										"querier":         apiextensionsv1.JSONSchemaProps{Type: string(jsonSchemePropsTypeAsInteger), Description: "Number of desired querier pod in loki stack. Default 1"},
-										"index-gateway":   apiextensionsv1.JSONSchemaProps{Type: string(jsonSchemePropsTypeAsInteger), Description: "Number of desired  index-gateway pod in loki stack. Default 1"},
-										"ruler":           apiextensionsv1.JSONSchemaProps{Type: string(jsonSchemePropsTypeAsInteger), Description: "Number of desired ruler pod in loki stack. Default 1"},
-										"compactor":       apiextensionsv1.JSONSchemaProps{Type: string(jsonSchemePropsTypeAsInteger), Description: "Number of compactor pod in loki stack. Default 1"},
+									"microservice": {Type: string(jsonSchemePropsTypeAsObject), Properties: map[string]apiextensionsv1.JSONSchemaProps{
+										"ingester":        {Type: string(jsonSchemePropsTypeAsInteger), Description: "Number of desired ingester pod in loki stack. Default 1"},
+										"distributor":     {Type: string(jsonSchemePropsTypeAsInteger), Description: "Number of desired distributor pod in loki stack. Default 1"},
+										"query-frontent":  {Type: string(jsonSchemePropsTypeAsInteger), Description: "Number of desired query-frontent pod in loki stack. Default 1"},
+										"query-scheduler": {Type: string(jsonSchemePropsTypeAsInteger), Description: "Nunber of desired query-scheduler pod in loki stack, Default 1"},
+										"querier":         {Type: string(jsonSchemePropsTypeAsInteger), Description: "Number of desired querier pod in loki stack. Default 1"},
+										"index-gateway":   {Type: string(jsonSchemePropsTypeAsInteger), Description: "Number of desired  index-gateway pod in loki stack. Default 1"},
+										"ruler":           {Type: string(jsonSchemePropsTypeAsInteger), Description: "Number of desired ruler pod in loki stack. Default 1"},
+										"compactor":       {Type: string(jsonSchemePropsTypeAsInteger), Description: "Number of compactor pod in loki stack. Default 1"},
 									}, Description: `The microservices deployment mode instantiates components of Loki as distinct processesConfig replicas of each target`},
-								}},
-							}, Description: "Spec describes the specification of Loki applications using kubernetes as a cluster manager"},
-							"status": apiextensionsv1.JSONSchemaProps{Type: string(jsonSchemePropsTypeAsObject), Properties: map[string]apiextensionsv1.JSONSchemaProps{
-								"phase": apiextensionsv1.JSONSchemaProps{Type: string(jsonSchemePropsTypeAsObject)},
+																							}},
+														}, Description: "Spec describes the specification of Loki applications using kubernetes as a cluster manager"},
+							"status": {Type: string(jsonSchemePropsTypeAsObject), Properties: map[string]apiextensionsv1.JSONSchemaProps{
+								"phase": {Type: string(jsonSchemePropsTypeAsObject)},
 							}, Description: "Status if the current running status of Loki in k8s. This data may be out of date by some window of time"},
 						},
 						Required: []string{"apiVersion", "kind", "metadata", "spec"},

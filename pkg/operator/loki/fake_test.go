@@ -35,11 +35,11 @@ type fakeController struct {
 // newFakeController return fakeController used to test operator
 func newFakeController(kubeClient *k8sfake.Clientset, crClient *crfakeclients.Clientset) *fakeController {
 	fc := &fakeController{
-		kubeClient:    kubeClient,
-		crClient:      crClient,
+		kubeClient:          kubeClient,
+		crClient:            crClient,
 		kubeInformerFactory: informers.NewSharedInformerFactory(kubeClient, noResyncPeriod()),
 		crInformerFactory:   crinformers.NewSharedInformerFactory(crClient, noResyncPeriod()),
-		recorder:      record.NewFakeRecorder(10),
+		recorder:            record.NewFakeRecorder(10),
 	}
 
 	fc.fixture = operatortesting.NewFixture(fc.kubeInformerFactory, fc.crInformerFactory)

@@ -1,6 +1,5 @@
 package operator
 
-
 type Operator interface {
-	Reconcile(obj interface{})error
+	Reconcile(obj interface{}) error
 }

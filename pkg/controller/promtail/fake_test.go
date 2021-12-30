@@ -13,13 +13,13 @@ import (
 	"time"
 )
 
-var noResyncPeriod = func()time.Duration {return 0}
+var noResyncPeriod = func() time.Duration { return 0 }
 
 type fakeController struct {
 	controller controller.Controller
 
-	fakeWatcher *watch.FakeWatcher
-	crClient *crfakeclients.Clientset
+	fakeWatcher       *watch.FakeWatcher
+	crClient          *crfakeclients.Clientset
 	crInformerFactory crinformers.SharedInformerFactory
 }
 
@@ -32,11 +32,9 @@ func newFakeController() *fakeController {
 	kubeInformerFactory := informers.NewSharedInformerFactory(kubeClient, noResyncPeriod())
 
 	return &fakeController{
-		controller:  promtail.NewFakeController(kubeClient, kubeInformerFactory,crClient, crInformerFactory,fake.NewOperator()),
-		fakeWatcher: watcher,
-		crClient: crClient,
+		controller:        promtail.NewFakeController(kubeClient, kubeInformerFactory, crClient, crInformerFactory, fake.NewOperator()),
+		fakeWatcher:       watcher,
+		crClient:          crClient,
 		crInformerFactory: crInformerFactory,
 	}
 }
-
-

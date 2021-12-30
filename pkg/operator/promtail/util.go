@@ -5,16 +5,14 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func getPromtailAppName(promtail *crapiv1alpha1.Promtail )string{
-	return  promtail.GetName() + "-promtail"
+func getPromtailAppName(promtail *crapiv1alpha1.Promtail) string {
+	return promtail.GetName() + "-promtail"
 }
 
-
-
 // getResourceLabels generate labels according crResource object
-func getResourceLabels(promtail *crapiv1alpha1.Promtail)map[string]string{
+func getResourceLabels(promtail *crapiv1alpha1.Promtail) map[string]string {
 	labels := map[string]string{
-		"app": promtail.GetName(),
+		"app":        promtail.GetName(),
 		"controller": promtail.Kind,
 	}
 	return labels
@@ -28,7 +26,7 @@ func getResourceLabels(promtail *crapiv1alpha1.Promtail)map[string]string{
 //}
 
 // getResourceOwnerReference generate OwnerReference according crResource object
-func getResourceOwnerReference(promtail *crapiv1alpha1.Promtail)[]metav1.OwnerReference{
+func getResourceOwnerReference(promtail *crapiv1alpha1.Promtail) []metav1.OwnerReference {
 	ownerReference := []metav1.OwnerReference{}
 	ownerReference = append(ownerReference, *metav1.NewControllerRef(promtail, crapiv1alpha1.SchemeGroupVersion.WithKind("Promtail")))
 	return ownerReference

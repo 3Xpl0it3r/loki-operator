@@ -27,12 +27,12 @@ type promtailOperator struct {
 	configMapLister listercorev1.ConfigMapLister
 	serviceLister   listercorev1.ServiceLister
 	daemonSetLister listerappsv1.DaemonSetLister
-	recorder      record.EventRecorder
+	recorder        record.EventRecorder
 }
 
 func NewOperator(kubeClientSet kubeclientset.Interface, crClientSet crclientset.Interface, promtailLister crlisterv1alpha1.PromtailLister,
 	configMapLister listercorev1.ConfigMapLister, serviceLister listercorev1.ServiceLister, daemonSetLister listerappsv1.DaemonSetLister,
-	recorder      record.EventRecorder) *promtailOperator {
+	recorder record.EventRecorder) *promtailOperator {
 	return &promtailOperator{
 		kubeClientSet:   kubeClientSet,
 		crClientSet:     crClientSet,
@@ -40,7 +40,7 @@ func NewOperator(kubeClientSet kubeclientset.Interface, crClientSet crclientset.
 		configMapLister: configMapLister,
 		serviceLister:   serviceLister,
 		daemonSetLister: daemonSetLister,
-		recorder: recorder,
+		recorder:        recorder,
 	}
 }
 

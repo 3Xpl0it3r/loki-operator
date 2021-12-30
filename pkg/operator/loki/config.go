@@ -102,14 +102,11 @@ func NewLokiConfigMap(loki *crapiv1alpha1.Loki, mod string) (*apicorev1.ConfigMa
 	}
 	cm := &apicorev1.ConfigMap{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      getLokiConfigMapName(loki, mod),
-			Namespace: loki.GetNamespace(),
+			Name:            getLokiConfigMapName(loki, mod),
+			Namespace:       loki.GetNamespace(),
 			OwnerReferences: getResourceOwnerReference(loki),
 		},
 		Data: map[string]string{"loki.yaml": cfgRaw.String()},
 	}
 	return cm, nil
 }
-
-
-

@@ -14,19 +14,17 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-
-
 var _ = Describe("Register CRD", func() {
 	var (
 		fakeExtClient extclientset.Interface
-		lokicrd = loki.NewCustomResourceDefine()
-		promtailcrd = promtail.NewCustomResourceDefine()
+		lokicrd       = loki.NewCustomResourceDefine()
+		promtailcrd   = promtail.NewCustomResourceDefine()
 	)
 	BeforeSuite(func() {
 		fakeExtClient = fakeextclientset.NewSimpleClientset()
 	})
 
-	Describe("Loki CRD Register" , func() {
+	Describe("Loki CRD Register", func() {
 		BeforeEach(func() {
 			err := crd.RegisterCRDWithObj(fakeExtClient, lokicrd)
 			gomega.Expect(err).ShouldNot(gomega.HaveOccurred())
@@ -37,13 +35,13 @@ var _ = Describe("Register CRD", func() {
 		})
 
 		It("get loki crd", func() {
-			tcrd,err := fakeExtClient.ApiextensionsV1().CustomResourceDefinitions().Get(context.TODO(), lokicrd.GetName(), metav1.GetOptions{})
+			tcrd, err := fakeExtClient.ApiextensionsV1().CustomResourceDefinitions().Get(context.TODO(), lokicrd.GetName(), metav1.GetOptions{})
 			gomega.Expect(err).ShouldNot(gomega.HaveOccurred())
 			gomega.Expect(tcrd.GetName()).Should(gomega.Equal(lokicrd.GetName()))
 		})
 	})
 
-	Describe("Promtail CRD Register" , func() {
+	Describe("Promtail CRD Register", func() {
 		BeforeEach(func() {
 			err := crd.RegisterCRDWithObj(fakeExtClient, promtailcrd)
 			gomega.Expect(err).ShouldNot(gomega.HaveOccurred())
@@ -53,7 +51,7 @@ var _ = Describe("Register CRD", func() {
 			gomega.Expect(err).ShouldNot(gomega.HaveOccurred())
 		})
 		It("get promtail crd", func() {
-			pcrd,err := fakeExtClient.ApiextensionsV1().CustomResourceDefinitions().Get(context.TODO(), promtailcrd.GetName(), metav1.GetOptions{})
+			pcrd, err := fakeExtClient.ApiextensionsV1().CustomResourceDefinitions().Get(context.TODO(), promtailcrd.GetName(), metav1.GetOptions{})
 			gomega.Expect(err).ShouldNot(gomega.HaveOccurred())
 			gomega.Expect(pcrd.GetName()).Should(gomega.Equal(promtailcrd.GetName()))
 		})
@@ -61,17 +59,16 @@ var _ = Describe("Register CRD", func() {
 
 })
 
-
 type crdMatcher struct {
 	crd *apiextensionsv1.CustomResourceDefinition
 }
 
 func (c crdMatcher) Match(actual interface{}) (success bool, err error) {
-	actualCrd,ok := actual.(*apiextensionsv1.CustomResourceDefinition)
+	actualCrd, ok := actual.(*apiextensionsv1.CustomResourceDefinition)
 	if !ok {
 		return false, fmt.Errorf("Except apiextensionsv1.CustomResourceDefinition, but got %T ", actual)
 	}
-	if c.crd.GetName() != actualCrd.GetName(){
+	if c.crd.GetName() != actualCrd.GetName() {
 		return false, fmt.Errorf("name is not same")
 	}
 	// ... todo
@@ -86,6 +83,6 @@ func (c crdMatcher) NegatedFailureMessage(actual interface{}) (message string) {
 	return ""
 }
 
-func CustomResourceDefineMatch(crd *apiextensionsv1.CustomResourceDefinition)*crdMatcher{
+func CustomResourceDefineMatch(crd *apiextensionsv1.CustomResourceDefinition) *crdMatcher {
 	return &crdMatcher{crd: crd}
 }

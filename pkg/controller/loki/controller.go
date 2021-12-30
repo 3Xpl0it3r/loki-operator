@@ -29,10 +29,8 @@ import (
 	crcontroller "github.com/l0calh0st/loki-operator/pkg/controller"
 )
 
-
 var (
-	alwaysReady = func() bool{return true}
-	noResyncPeriodFunc = func() time.Duration{ return  0}
+	alwaysReady        = func() bool { return true }
 )
 
 // controller is implement Controller for Loki resources
@@ -44,19 +42,19 @@ type controller struct {
 	queue         workqueue.RateLimitingInterface
 	recorder      record.EventRecorder
 
-	statefulSetLister        listerappsv1.StatefulSetLister
-	serviceLister    listercorev1.ServiceLister
-	configMapLister  listercorev1.ConfigMapLister
-	deploymentLister listerappsv1.DeploymentLister
-	lokiLister       crlisterv1alpha1.LokiLister
-	cacheSynced      []cache.InformerSynced
+	statefulSetLister listerappsv1.StatefulSetLister
+	serviceLister     listercorev1.ServiceLister
+	configMapLister   listercorev1.ConfigMapLister
+	deploymentLister  listerappsv1.DeploymentLister
+	lokiLister        crlisterv1alpha1.LokiLister
+	cacheSynced       []cache.InformerSynced
 
 	operator operator.Operator
 }
 
 // NewFakeController return a new fake promTail controller
-func NewFakeController(kubeClient kubeclientset.Interface,kubeInformerFactory informers.SharedInformerFactory,
-	crClient crclientset.Interface, crInformerFactory crinformers.SharedInformerFactory,operator operator.Operator,
+func NewFakeController(kubeClient kubeclientset.Interface, kubeInformerFactory informers.SharedInformerFactory,
+	crClient crclientset.Interface, crInformerFactory crinformers.SharedInformerFactory, operator operator.Operator,
 ) crcontroller.Controller {
 	c := NewController(kubeClient, kubeInformerFactory, crClient, crInformerFactory, nil).(*controller)
 	c.operator = operator
@@ -64,7 +62,6 @@ func NewFakeController(kubeClient kubeclientset.Interface,kubeInformerFactory in
 	c.recorder = record.NewFakeRecorder(10)
 	return c
 }
-
 
 // NewController create a new controller for Loki resources
 func NewController(kubeClientSet kubeclientset.Interface, kubeInformerFactory informers.SharedInformerFactory, crClientSet crclientset.Interface,
@@ -75,11 +72,8 @@ func NewController(kubeClientSet kubeclientset.Interface, kubeInformerFactory in
 	eventBroadcaster.StartRecordingToSink(&typedcorev1.EventSinkImpl{Interface: kubeClientSet.CoreV1().Events(apicorev1.NamespaceAll)})
 	recorder := eventBroadcaster.NewRecorder(scheme.Scheme, apicorev1.EventSource{Component: "loki-operator"})
 
-
 	return newLokiController(kubeClientSet, kubeInformerFactory, crClientSet, crInformerFactory, recorder, reg)
 }
-
-
 
 // newLokiController is really conv
 func newLokiController(kubeClientSet kubeclientset.Interface, kubeInformers informers.SharedInformerFactory, crClientSet crclientset.Interface,
@@ -113,12 +107,11 @@ func newLokiController(kubeClientSet kubeclientset.Interface, kubeInformers info
 	lokiInformer.Informer().AddEventHandlerWithResyncPeriod(newLokiEventHandler(c), 5*time.Second)
 	c.cacheSynced = append(c.cacheSynced, lokiInformer.Informer().HasSynced)
 
-	c.operator = loki.NewOperator(kubeClientSet, crClientSet,c.lokiLister, c.configMapLister, c.serviceLister, c.statefulSetLister, c.deploymentLister,c.recorder)
+	c.operator = loki.NewOperator(kubeClientSet, crClientSet, c.lokiLister, c.configMapLister, c.serviceLister, c.statefulSetLister, c.deploymentLister, c.recorder)
 	return c
 }
 
 func (c *controller) Start(ctx context.Context) error {
-
 	// wait for all involved cached to be synced , before processing items from the queue is started
 	if !cache.WaitForCacheSync(ctx.Done(), func() bool {
 		for _, hasSyncdFn := range c.cacheSynced {
@@ -132,8 +125,9 @@ func (c *controller) Start(ctx context.Context) error {
 	}
 	klog.Infof("loki controller has started, begin handler items....")
 	go wait.Until(c.runWorker, time.Second, ctx.Done())
-	<-ctx.Done()
-	return ctx.Err()
+	<- ctx.Done()
+	klog.Infof("loki Controller has stopped")
+	return nil
 }
 
 // runWorker for loop

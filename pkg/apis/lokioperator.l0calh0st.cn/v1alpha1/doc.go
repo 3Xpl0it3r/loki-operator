@@ -16,5 +16,3 @@ limitations under the License.
 
 // Package v1alpha1 is the v1alpha1 version of the API.
 package v1alpha1 // import "github.com/l0calh0st/loki-operator/pkg/apis/lokioperator.l0calh0st.cn/v1alpha1"
-
-

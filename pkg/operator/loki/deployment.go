@@ -11,7 +11,7 @@ import (
 func newLokiDeployment(loki *crapiv1alpha1.Loki, modKind crapiv1alpha1.ModeKind, target crapiv1alpha1.LokiTargetKind, cm *apicorev1.ConfigMap) *apiappsv1.Deployment {
 	var (
 		resourceLabels = getResourceLabels(loki, string(modKind), string(target))
-		replicas = loki.Spec.DeployMode[modKind][target]
+		replicas       = loki.Spec.DeployMode[modKind][target]
 	)
 
 	dpl := &apiappsv1.Deployment{
@@ -59,4 +59,3 @@ func newLokiDeployment(loki *crapiv1alpha1.Loki, modKind crapiv1alpha1.ModeKind,
 	}
 	return dpl
 }
-

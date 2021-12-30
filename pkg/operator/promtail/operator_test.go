@@ -22,7 +22,7 @@ var _ = Describe("Test Promtail Operator", func() {
 		service   *apicorev1.Service
 		daemonSet *apiappsv1.DaemonSet
 
-		fakeCtrl *fakeController
+		fakeCtrl   *fakeController
 		kubeClient *k8sfake.Clientset
 		crClient   *crfakeclients.Clientset
 	)
